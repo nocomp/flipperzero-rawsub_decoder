@@ -116,11 +116,12 @@ def convert_to_bytes(data):
 def main():
     parser = argparse.ArgumentParser(description="Flipper file RAW analyzer based on Manchester decoding")
     parser.add_argument(
-        "filename", help=".sub file to be analyzed", type=str)
+        "filename", help=".sub file(s) to be analyzed", type=str, nargs="+")
     args = parser.parse_args()
     try:
-        for fname in args.fname:
+        for fname in args.filename:
             with open(fname, "r") as f:
+                print(f"File: {fname}")
                 y = convert_file_to_array(f)
                 b = get_burst(y)
                 print(f"Burst found: {b}")
