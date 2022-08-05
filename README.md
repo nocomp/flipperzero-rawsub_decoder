@@ -10,6 +10,6 @@ Bits are decoded depending on the edges of duration between 700 and 900 :
 
 # Usage
 ```
-python3 parse_raw_sub_garage.py -h
+python3 parse_raw_sub_ook_manchester.py -h
 ```
 
