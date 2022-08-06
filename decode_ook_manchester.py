@@ -66,8 +66,7 @@ def decode_burst(y):
     odd_len = False
     if l % 2 != 0:
         odd_len = True
-        print(f"Odd number of symbols: {l}...")
-        #raise BaseException(f"Odd number of symbols: {l}")
+        #print(f"Odd number of symbols: {l}")
 
     for v in range(int(l / 2)):
         index = v * 2
@@ -76,8 +75,13 @@ def decode_burst(y):
         #print(f"{a} {b}")
         data.append(decode_manchester(a, b))
     if odd_len:
-        last = symbols[-1]
-        print(f"Last symbol {last} was not used...")
+        last = symbols_split[-1]
+        if last == 1:
+            data.append(1)
+            print(f"Last symbol {last} converted to 1 (because the following symbol is a zero merged with the long zero pause which follows the burst")
+        else:
+            #print(f"Last symbol {last} could not be used...")
+            raise BaseException(f"Odd number of symbols: {l} and last symbol {last} is not the beginning of a falling edge")
 
     print(f"Data = {data}")
     print(f"Length data = {len(data)}")
