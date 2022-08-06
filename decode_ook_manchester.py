@@ -88,17 +88,17 @@ def decode_burst(y):
     return data
 
 def decode_symbol(a_list, v):
-    if v >= 350 and v < 450:
+    if v >= 350 and v <= 450:
         a_list.append(1)
         #print(f"Symbol {v} converted to 1")
-    elif v <= -350 and v > -450:
+    elif v <= -350 and v >= -450:
         a_list.append(0)
         #print(f"Symbol {v} converted to 0")
-    elif v >= 700 and v < 900:
+    elif v >= 700 and v <= 900:
         a_list.append(1)
         a_list.append(1)
         #print(f"Symbol {v} converted to 11")
-    elif v <= -700 and v > -900:
+    elif v <= -700 and v >= -900:
         a_list.append(0)
         a_list.append(0)
         #print(f"Symbol {v} converted to 00")
