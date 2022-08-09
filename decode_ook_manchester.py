@@ -17,12 +17,42 @@ def convert_file_to_array(f):
                 #print(f"{d}")
     return y
 
+def analyze_all(all_data):
+    stats_burst_nb = 0
+    stats_bytes = []
+    while(True):
+        b, i_end, burst_found = get_burst(all_data)
+        #print(f"i_end = {i_end}")
+        if i_end == 0 or not burst_found:
+            break
+        print(f"Burst found: {b}")
+        stats_burst_nb += 1
+        try:
+            data = decode_burst(b)
+        except BaseException as e:
+            print(f"This burst couldn't not be decoded: {e}")
+            all_data = all_data[i_end::]
+            continue
+        data_bytes = convert_to_bytes(data)
+        if len(data_bytes) > 0:
+            print(f"In bytes:")
+            print(", ".join("{:02X}".format(v) for v in data_bytes))
+            stats_bytes.append(data_bytes)
+        all_data = all_data[i_end::]
+    print("--- STATS")
+    print(f"--- Number of bursts: {stats_burst_nb}")
+    print("--- Bytes:")
+    for b in stats_bytes:
+        print("------ " + ", ".join("{:02X}".format(v) for v in b))
+
 def get_burst(y):
     #print(f"{y}")
     burst = []
     burst_found = False
+    i = 0
     # search burst
     for v in y:
+        i += 1
         #print(f"get_burst: analyzing {v}")
         if v >= 1700 and v < 1800:
             burst.append(v)
@@ -35,7 +65,7 @@ def get_burst(y):
         if burst_found:
             burst.append(v)
             #print(f"Append {v}")
-    return burst
+    return burst, i, burst_found
 
 def decode_burst(y):
     data = []
@@ -88,17 +118,17 @@ def decode_burst(y):
     return data
 
 def decode_symbol(a_list, v):
-    if v >= 350 and v <= 450:
+    if v >= 350 and v <= 455:
         a_list.append(1)
         #print(f"Symbol {v} converted to 1")
-    elif v <= -350 and v >= -450:
+    elif v <= -350 and v >= -455:
         a_list.append(0)
         #print(f"Symbol {v} converted to 0")
-    elif v >= 700 and v <= 900:
+    elif v >= 700 and v <= 910:
         a_list.append(1)
         a_list.append(1)
         #print(f"Symbol {v} converted to 11")
-    elif v <= -700 and v >= -900:
+    elif v <= -700 and v >= -910:
         a_list.append(0)
         a_list.append(0)
         #print(f"Symbol {v} converted to 00")
@@ -116,7 +146,7 @@ def decode_manchester(a, b):
 def convert_to_bytes(data_bits):
     if len(data_bits) % 8 != 0:
         print("Data isn't aligned on byte length")
-        return
+        return []
     data_bytes = [int("".join(map(str, data_bits[i:i+8])), 2) for i in range(0, len(data_bits), 8)]
     return data_bytes
 
@@ -130,13 +160,7 @@ def main():
             with open(fname, "r") as f:
                 print(f"File: {fname}")
                 y = convert_file_to_array(f)
-                b = get_burst(y)
-                print(f"Burst found: {b}")
-                data = decode_burst(b)
-                data_bytes = convert_to_bytes(data)
-                print(f"In bytes:")
-                print(", ".join("{:02X}".format(v) for v in data_bytes))
-
+                analyze_all(y)
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
