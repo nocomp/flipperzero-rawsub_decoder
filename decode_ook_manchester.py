@@ -113,13 +113,12 @@ def decode_manchester(a, b):
     else:
         raise BaseException(f"Symbols {a} {b} incompatible with Manchester coding")
 
-def convert_to_bytes(data):
-    if len(data) % 8 != 0:
+def convert_to_bytes(data_bits):
+    if len(data_bits) % 8 != 0:
         print("Data isn't aligned on byte length")
         return
-    # TODO: Little or Big endian ??
-
-    pass
+    data_bytes = [int("".join(map(str, data_bits[i:i+8])), 2) for i in range(0, len(data_bits), 8)]
+    return data_bytes
 
 def main():
     parser = argparse.ArgumentParser(description="Flipper file RAW analyzer based on Manchester decoding")
@@ -135,7 +134,8 @@ def main():
                 print(f"Burst found: {b}")
                 data = decode_burst(b)
                 data_bytes = convert_to_bytes(data)
-                print(f"In bytes: {data_bytes}")
+                print(f"In bytes:")
+                print(", ".join("{:02X}".format(v) for v in data_bytes))
 
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
