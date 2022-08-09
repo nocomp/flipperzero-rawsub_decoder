@@ -68,8 +68,8 @@ def decode_burst(y):
         odd_len = True
         #print(f"Odd number of symbols: {l}")
 
-    for v in range(int(l / 2)):
-        index = v * 2
+    for v in range(0, int(l)-1, 2):
+        index = v
         a = symbols_split[index]
         b = symbols_split[index+1]
         #print(f"{a} {b}")
@@ -114,7 +114,11 @@ def decode_manchester(a, b):
         raise BaseException(f"Symbols {a} {b} incompatible with Manchester coding")
 
 def convert_to_bytes(data):
-    # Little or Big endian ??
+    if len(data) % 8 != 0:
+        print("Data isn't aligned on byte length")
+        return
+    # TODO: Little or Big endian ??
+
     pass
 
 def main():
@@ -131,6 +135,7 @@ def main():
                 print(f"Burst found: {b}")
                 data = decode_burst(b)
                 data_bytes = convert_to_bytes(data)
+                print(f"In bytes: {data_bytes}")
 
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
